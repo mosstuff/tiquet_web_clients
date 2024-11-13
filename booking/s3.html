@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <style>
+        /* Ensure the dropdown button has a minimum width */
+        #dropdownButton {
+            min-width: 160px; /* Adjust this value to match the initial button width */
+        }
+    </style>
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <progress class="progress is-link" value="75" max="100">
+            75%
+        </progress>
+        <h1 class="title">Tiquet - Booking</h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <div class="is-flex is-justify-content-center block">
+            <input class="input" type="text" placeholder="Name" id="name" />
+        </div>
+        <div class="is-flex is-justify-content-center block">
+            <button class="button is-large is-primary is-responsive" id="continueButton" onclick="handleButtonClick()">Continue</button>
+        </div>
+    </div>
+</section>
+<script>
+    function handleButtonClick() {
+        const nameField = document.getElementById('name');
+        const enteredName = nameField.value
+        if (!enteredName) {
+            alert("Please enter a code first!");
+            return;
+        }
+        const button = document.getElementById('continueButton');
+        button.classList.add('is-loading');
+        const currentUrl = window.location.href.split('#')[0];
+        const queryString = currentUrl.split('?')[1] || '';
+        const urlParams = new URLSearchParams(queryString);
+        urlParams.set('name', enteredName);
+        const newUrl = `s4.html?${urlParams.toString()}`;
+        window.location.href = newUrl;
+    }
+</script>
+</body>
+</html>
