@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <title>Instructor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <style>
+        /* Additional CSS for centering the clock */
+        .clock-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">Tiquet - Instructor</h1>
+        <h1 class="subtitle">Sim 01</h1>
+    </div>
+</section>
+<div class="columns">
+    <div class="column is-one-third">
+        <section class="section">
+            <div class="container">
+                <h1 class="title is-4">Current customer</h1>
+                <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <span>Max Mustermann</span>
+                    </span>
+                <br>
+                <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-plane-departure"></i>
+                        </span>
+                        <span>Florida_Keys</span>
+                    </span>
+                <br><br>
+                <span class="icon-text">
+                        <span class="icon has-text-success">
+                            <i class="fas fa-check"></i>
+                        </span>
+                        <span>Arrived</span>
+                    </span>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <h1 class="title is-4">Next customer</h1>
+                <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <span>Maximilia Musterfrau</span>
+                    </span>
+                <br>
+                <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-plane-departure"></i>
+                        </span>
+                        <span>Grand_Canyon</span>
+                    </span>
+                <br><br>
+                <span class="icon-text">
+                        <span class="icon has-text-warning">
+                            <i class="fas fa-clock"></i>
+                        </span>
+                        <span>Booked</span>
+                    </span>
+            </div>
+        </section>
+    </div>
+    <div class="column clock-container">
+        <div>
+            <h1 id="timer" class="title is-1" style="font-size: 15rem;">10:00</h1>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function updateTimer() {
+        const timerElement = document.getElementById('timer');
+        const currentTime = new Date();
+        const currentMinutes = currentTime.getMinutes();
+        const remainingSeconds = (10 - currentMinutes % 10) * 60 - currentTime.getSeconds();
+        const remainingMinutes = Math.floor(remainingSeconds / 60);
+        const formattedSeconds = remainingSeconds % 60;
+
+        timerElement.textContent = `${remainingMinutes.toString().padStart(2, '0')}:${formattedSeconds.toString().padStart(2, '0')}`;
+    }
+    updateTimer();
+    setInterval(() => {
+        updateTimer();
+        // Fetch data every 10 seconds to update the name and status
+        if (new Date().getSeconds() % 10 === 0) {
+            //Add update data func here
+        }
+    }, 1000);
+</script>
+</html>

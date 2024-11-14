@@ -2,18 +2,52 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Booking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <title>Info</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <style>
+        /* Reduce the padding of the container */
+        .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        /* Remove padding from table cells for both horizontal and vertical space */
+        .table td, .table th {
+            padding: 10px 5px; /* Reduce horizontal padding */
+        }
+
+        /* Optionally, you can add a little more space between rows */
+        .table tbody tr {
+            height: 50px; /* Increase the row height */
+        }
+
+        /* Allow the table to take up more horizontal space */
+        .table-container {
+            width: 100%;
+        }
+
+        /* Optional: Increase font size for better visibility */
+        .table td, .table th {
+            font-size: 1.1rem;
+        }
+
+        /* Make sure the table width stretches more */
+        .table.is-fullwidth {
+            width: 100%;
+        }
+
+        /* Optional: Increase line height to make the content more spread out vertically */
+        .table td, .table th {
+            line-height: 1.75;
+        }
+    </style>
 </head>
 <body>
 <section class="section">
     <div class="container">
-        <progress class="progress is-success" value="100" max="100">
-            100%
-        </progress>
-        <h1 class="title">Tiquet - Booking</h1>
+        <h1 class="title">Tiquet - Info</h1>
     </div>
 </section>
 <section class="section">
@@ -25,11 +59,15 @@
                     <th>Value</th>
                 </tr>
                 <tr>
-                    <td>Activity</td>
+                    <td>Simulator</td>
                     <td id="activityField">ERROR</td>
                 </tr>
                 <tr>
-                    <td>Time</td>
+                    <td>Route</td>
+                    <td id="subactivityField">ERROR</td>
+                </tr>
+                <tr>
+                    <td>Zeit</td>
                     <td id="timeField">ERROR</td>
                 </tr>
                 <tr>
@@ -42,9 +80,14 @@
                 </tr>
             </table>
         </div>
-        <div class="is-flex is-justify-content-center block">
-            <button class="button is-large is-primary is-responsive" id="submitButton" onclick="handleButtonClick()">Submit</button>
-        </div>
+        <article class="message is-danger">
+            <div class="message-header">
+                <p>Bitte beachte</p>
+            </div>
+            <div class="message-body">
+                Sei bitte spätestens <strong>fünf Minuten</strong> vor dem beginn deines Zeitfensters da! Danke!
+            </div>
+        </article>
     </div>
 </section>
 <script>
@@ -52,6 +95,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         return {
             activity: urlParams.get('activity'),
+            subactivity: urlParams.get('subactivity'),
             time: urlParams.get('time'),
             name: urlParams.get('name'),
             code: urlParams.get('code')
@@ -61,14 +105,10 @@
         const params = getUrlParams();
 
         if (params.activity) document.getElementById('activityField').innerText = params.activity;
+        if (params.subactivity) document.getElementById('subactivityField').innerText = params.subactivity;
         if (params.time) document.getElementById('timeField').innerText = params.time;
         if (params.name) document.getElementById('nameField').innerText = params.name;
         if (params.code) document.getElementById('codeField').innerText = params.code;
-    }
-    function handleButtonClick() {
-        const button = document.getElementById('submitButton');
-        button.classList.add('is-loading');
-        window.location.href = 'index.html';
     }
     window.onload = populateTableFields;
 </script>

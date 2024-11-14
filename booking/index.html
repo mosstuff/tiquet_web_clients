@@ -10,7 +10,7 @@
 <body>
 <section class="section">
     <div class="container">
-        <progress class="progress is-link" value="0" max="100">
+        <progress id="progress" class="progress is-link" value="0" max="100">
             0%
         </progress>
         <h1 class="title">Tiquet - Booking</h1>
@@ -23,9 +23,23 @@
         </div>
     </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script>
+    function animateProgress($progressBar, val, currentVal) {
+        currentVal = currentVal || 0;
+        var step = val * 16 / 500;
+        function animate(currentVal) {
+            currentVal += step;
+            $progressBar.val(currentVal);
+            currentVal < val && requestAnimationFrame(function() {
+                animate(currentVal);
+            });
+        }
+        animate(currentVal);
+    }
     function handleButtonClick() {
         const button = document.getElementById('startButton');
+        animateProgress($('#progress'), 25);
         button.classList.add('is-loading');
         window.location.href = 's1.html';
     }
