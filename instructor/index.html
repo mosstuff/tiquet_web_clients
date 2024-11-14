@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
-        /* Additional CSS for centering the clock */
         .clock-container {
             display: flex;
             justify-content: center;
@@ -19,7 +18,7 @@
 <section class="section">
     <div class="container">
         <h1 class="title">Tiquet - Instructor</h1>
-        <h1 class="subtitle">Sim 01</h1>
+        <h1 class="subtitle" id="sim-id">N/A</h1>
     </div>
 </section>
 <div class="columns">
@@ -28,50 +27,50 @@
             <div class="container">
                 <h1 class="title is-4">Current customer</h1>
                 <span class="icon-text">
-                        <span class="icon">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <span>Max Mustermann</span>
+                    <span class="icon">
+                        <i class="fas fa-user"></i>
                     </span>
+                    <span id="current-name">N/A</span>
+                </span>
                 <br>
                 <span class="icon-text">
-                        <span class="icon">
-                            <i class="fas fa-plane-departure"></i>
-                        </span>
-                        <span>Florida_Keys</span>
+                    <span class="icon">
+                        <i class="fas fa-plane-departure"></i>
                     </span>
+                    <span id="current-subactivity">N/A</span>
+                </span>
                 <br><br>
                 <span class="icon-text">
-                        <span class="icon has-text-success">
-                            <i class="fas fa-check"></i>
-                        </span>
-                        <span>Arrived</span>
+                    <span class="icon" id="current-status-icon">
+                        <i class="fas fa-clock" id="current-status-icon-icon"></i>
                     </span>
+                    <span id="current-status">N/A</span>
+                </span>
             </div>
         </section>
         <section class="section">
             <div class="container">
                 <h1 class="title is-4">Next customer</h1>
                 <span class="icon-text">
-                        <span class="icon">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <span>Maximilia Musterfrau</span>
+                    <span class="icon">
+                        <i class="fas fa-user"></i>
                     </span>
+                    <span id="next-name">N/A</span>
+                </span>
                 <br>
                 <span class="icon-text">
-                        <span class="icon">
-                            <i class="fas fa-plane-departure"></i>
-                        </span>
-                        <span>Grand_Canyon</span>
+                    <span class="icon">
+                        <i class="fas fa-plane-departure"></i>
                     </span>
+                    <span id="next-subactivity">N/A</span>
+                </span>
                 <br><br>
                 <span class="icon-text">
-                        <span class="icon has-text-warning">
-                            <i class="fas fa-clock"></i>
-                        </span>
-                        <span>Booked</span>
+                    <span class="icon" id="next-status-icon">
+                        <i class="fas fa-clock" id="next-status-icon-icon"></i>
                     </span>
+                    <span id="next-status">N/A</span>
+                </span>
             </div>
         </section>
     </div>
@@ -83,6 +82,72 @@
 </div>
 </body>
 <script>
+    let activityId = prompt("Please enter the activity ID");
+    const activityNameElement = document.getElementById(`sim-id`);
+    activityNameElement.textContent = `${activityId}`;
+
+    async function getConfig() {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/config');
+        return response.json();
+    }
+
+    async function getBookings() {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/booking/get_booking');
+        return response.json();
+    }
+
+    function parseTimeString(timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;  // Convert hours and minutes into total minutes since midnight
+    }
+
+    function findCurrentAndNextTimeslot(allTimeslots, systemTime) {
+        const systemMinutes = parseTimeString(systemTime);
+
+        for (let i = 0; i < allTimeslots.length; i++) {
+            const [start, end] = allTimeslots[i].split(" - ").map(parseTimeString);
+
+            if (systemMinutes >= start && systemMinutes < end) {
+                return {
+                    current: allTimeslots[i],
+                    next: allTimeslots[i + 1] || "N/A"
+                };
+            }
+        }
+        return { current: "N/A", next: "N/A" };  // If no timeslot matches, return "N/A"
+    }
+
+    function populateCustomerData(slotData, elementPrefix) {
+        document.getElementById(`${elementPrefix}-name`).textContent = slotData.name || "N/A";
+        document.getElementById(`${elementPrefix}-subactivity`).textContent = slotData.subactivity || "N/A";
+        const statusElement = document.getElementById(`${elementPrefix}-status`);
+        const iconElement = document.getElementById(`${elementPrefix}-status-icon`);
+        const iconIconElement = document.getElementById(`${elementPrefix}-status-icon-icon`);
+
+        if (slotData.arrived) {
+            statusElement.textContent = "Arrived";
+            iconIconElement.classList.replace("fa-clock", "fa-check");
+            iconElement.classList.add("has-text-success");
+        } else {
+            statusElement.textContent = "Booked";
+            iconIconElement.classList.replace("fa-check", "fa-clock");
+            iconElement.classList.add("has-text-warning");
+        }
+    }
+
+    async function initializePage() {
+        const configData = await getConfig();
+        const { all_timeslots, system_time } = configData;
+        const { current, next } = findCurrentAndNextTimeslot(all_timeslots, system_time);
+
+        const bookings = await getBookings();
+        const currentBooking = bookings.find(b => b.timeslot === current && b.activity === activityId) || {};
+        const nextBooking = bookings.find(b => b.timeslot === next && b.activity === activityId) || {};
+
+        populateCustomerData(currentBooking, "current");
+        populateCustomerData(nextBooking, "next");
+    }
+
     function updateTimer() {
         const timerElement = document.getElementById('timer');
         const currentTime = new Date();
@@ -93,13 +158,13 @@
 
         timerElement.textContent = `${remainingMinutes.toString().padStart(2, '0')}:${formattedSeconds.toString().padStart(2, '0')}`;
     }
-    updateTimer();
-    setInterval(() => {
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initializePage();
         updateTimer();
-        // Fetch data every 10 seconds to update the name and status
-        if (new Date().getSeconds() % 10 === 0) {
-            //Add update data func here
-        }
-    }, 1000);
+        setInterval(updateTimer, 1000);
+        setInterval(initializePage, 10000);
+    });
 </script>
+
 </html>
