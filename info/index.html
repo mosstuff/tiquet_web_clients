@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Info</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
@@ -12,32 +12,26 @@
             padding-left: 0;
             padding-right: 0;
         }
-
         /* Remove padding from table cells for both horizontal and vertical space */
         .table td, .table th {
             padding: 10px 5px; /* Reduce horizontal padding */
         }
-
         /* Optionally, you can add a little more space between rows */
         .table tbody tr {
             height: 50px; /* Increase the row height */
         }
-
         /* Allow the table to take up more horizontal space */
         .table-container {
             width: 100%;
         }
-
         /* Optional: Increase font size for better visibility */
         .table td, .table th {
             font-size: 1.1rem;
         }
-
         /* Make sure the table width stretches more */
         .table.is-fullwidth {
             width: 100%;
         }
-
         /* Optional: Increase line height to make the content more spread out vertically */
         .table td, .table th {
             line-height: 1.75;
@@ -91,25 +85,42 @@
     </div>
 </section>
 <script>
-    function getUrlParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return {
-            activity: urlParams.get('activity'),
-            subactivity: urlParams.get('subactivity'),
-            time: urlParams.get('time'),
-            name: urlParams.get('name'),
-            code: urlParams.get('code')
-        };
+    async function fetchBookingData(id) {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/booking/get_booking/${id}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching booking data:', error);
+            return null;
+        }
     }
-    function populateTableFields() {
-        const params = getUrlParams();
 
-        if (params.activity) document.getElementById('activityField').innerText = params.activity;
-        if (params.subactivity) document.getElementById('subactivityField').innerText = params.subactivity;
-        if (params.time) document.getElementById('timeField').innerText = params.time;
-        if (params.name) document.getElementById('nameField').innerText = params.name;
-        if (params.code) document.getElementById('codeField').innerText = params.code;
+    function getIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
     }
+
+    async function populateTableFields() {
+        const id = getIdFromUrl();
+        if (!id) {
+            console.error('No id parameter provided in the URL');
+            return;
+        }
+
+        const bookingData = await fetchBookingData(id);
+        if (!bookingData) return;
+
+        document.getElementById('activityField').innerText = bookingData.activity || 'ERROR';
+        document.getElementById('subactivityField').innerText = bookingData.subactivity || 'ERROR';
+        document.getElementById('timeField').innerText = bookingData.timeslot || 'ERROR';
+        document.getElementById('nameField').innerText = bookingData.name || 'ERROR';
+        document.getElementById('codeField').innerText = bookingData.qr_code || 'ERROR';
+    }
+
     window.onload = populateTableFields;
 </script>
 </body>
