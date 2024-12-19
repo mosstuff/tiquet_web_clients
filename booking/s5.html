@@ -29,6 +29,10 @@
                     <td id="activityField">ERROR</td>
                 </tr>
                 <tr>
+                    <td>Sub-Activity</td>
+                    <td id="subactivityField">ERROR</td>
+                </tr>
+                <tr>
                     <td>Time</td>
                     <td id="timeField">ERROR</td>
                 </tr>
@@ -52,22 +56,31 @@
         const urlParams = new URLSearchParams(window.location.search);
         return {
             activity: urlParams.get('activity'),
-            time: urlParams.get('time'),
+            subactivity: urlParams.get('subactivity'),
+            timeslot: urlParams.get('time'),
             name: urlParams.get('name'),
-            code: urlParams.get('code')
+            qr_code: urlParams.get('code')
         };
     }
     function populateTableFields() {
         const params = getUrlParams();
 
         if (params.activity) document.getElementById('activityField').innerText = params.activity;
-        if (params.time) document.getElementById('timeField').innerText = params.time;
+        if (params.subactivity) document.getElementById('subactivityField').innerText = params.subactivity;
+        if (params.timeslot) document.getElementById('timeField').innerText = params.timeslot;
         if (params.name) document.getElementById('nameField').innerText = params.name;
-        if (params.code) document.getElementById('codeField').innerText = params.code;
+        if (params.qr_code) document.getElementById('codeField').innerText = params.qr_code;
     }
     function handleButtonClick() {
         const button = document.getElementById('submitButton');
         button.classList.add('is-loading');
+        fetch("http://127.0.0.1:8000/api/v1/booking/create_booking", {
+            method: "POST",
+            body: JSON.stringify(getUrlParams()),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        });
         window.location.href = 'index.html';
     }
     window.onload = populateTableFields;
