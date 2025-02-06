@@ -74,7 +74,7 @@
     async function handleButtonClick() {
         const button = document.getElementById('submitButton');
         button.classList.add('is-loading');
-        await fetch("https://tiquet-staging-api.mosstuff.de/api/v1/booking/create_booking", {
+        await fetch("https://api.tiquet.mosstuff.de/api/v1/booking/create_booking", {
             method: "POST",
             body: JSON.stringify(getUrlParams()),
             headers: {

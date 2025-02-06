@@ -25,7 +25,7 @@
 </section>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script>
-    fetch("https://tiquet-staging-api.mosstuff.de/api/v1/state/booking/1/set/promo", {
+    fetch("https://api.tiquet.mosstuff.de/api/v1/state/booking/1/set/promo", {
         method: "GET",
         headers: {
             "Content-type": "application/json; charset=UTF-8"
@@ -47,7 +47,7 @@
         const button = document.getElementById('startButton');
         animateProgress($('#progress'), 25);
         button.classList.add('is-loading');
-        await fetch("https://tiquet-staging-api.mosstuff.de/api/v1/state/booking/1/set/table", {
+        await fetch("https://api.tiquet.mosstuff.de/api/v1/state/booking/1/set/table", {
             method: "GET",
             headers: {
                 "Content-type": "application/json; charset=UTF-8"

@@ -97,8 +97,8 @@
     });
 
     document.addEventListener("DOMContentLoaded", async function () {
-        const configUrl = "https://tiquet-staging-api.mosstuff.de/api/v1/config";
-        const bookingUrl = "https://tiquet-staging-api.mosstuff.de/api/v1/booking/get_booking";
+        const configUrl = "https://api.tiquet.mosstuff.de/api/v1/config";
+        const bookingUrl = "https://api.tiquet.mosstuff.de/api/v1/booking/get_booking";
         const urlParams = new URLSearchParams(window.location.search);
         const selectedActivity = urlParams.get("activity");
 

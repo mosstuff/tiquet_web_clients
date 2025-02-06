@@ -104,7 +104,7 @@
     }
 
     function fetchConfig() {
-        fetch('https://tiquet-staging-api.mosstuff.de/api/v1/config')
+        fetch('https://api.tiquet.mosstuff.de/api/v1/config')
             .then(response => response.json())
             .then(data => {
                 console.log("Fetched data:", data); // Debugging
