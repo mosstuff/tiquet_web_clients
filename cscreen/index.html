@@ -5,48 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=2">
     <title>Instructor</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
-        .clock-container {
+        .table-wrapper {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .table-container {
+            flex: 1;
+            min-width: 400px;
+        }
+        table {
+            width: 100%;
+            table-layout: auto;
+        }
+        th, td {
+            white-space: nowrap;
         }
     </style>
+    <script>
+        async function fetchConfig() {
+            try {
+                const response = await fetch("https://tiquet-staging-api.mosstuff.de/api/v1/config");
+                if (!response.ok) throw new Error("Failed to fetch config");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching config:", error);
+                return null;
+            }
+        }
+
+        async function fetchBookings() {
+            try {
+                const response = await fetch("https://tiquet-staging-api.mosstuff.de/api/v1/booking/get_booking");
+                if (!response.ok) throw new Error("Failed to fetch bookings");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching bookings:", error);
+                return [];
+            }
+        }
+
+        async function populateTables() {
+            const config = await fetchConfig();
+            const bookings = await fetchBookings();
+            if (!config) return;
+
+            const tableWrapper = document.getElementById("tableWrapper");
+            tableWrapper.innerHTML = "";
+
+            const timeslotsPerTable = Math.ceil(config.all_timeslots.length / 2); // Split into two tables
+            for (let i = 0; i < 2; i++) {
+                const tableContainer = document.createElement("div");
+                tableContainer.className = "table-container";
+
+                const table = document.createElement("table");
+                table.className = "table is-striped";
+
+                let headerRow = `<tr><th>Zeit</th>`;
+                Object.keys(config.activities).forEach(sim => {
+                    headerRow += `<th>${sim}</th>`;
+                });
+                headerRow += `</tr>`;
+                table.innerHTML += headerRow;
+
+                config.all_timeslots.slice(i * timeslotsPerTable, (i + 1) * timeslotsPerTable).forEach(timeslot => {
+                    let row = `<tr><td>${timeslot}</td>`;
+                    Object.keys(config.activities).forEach(sim => {
+                        const isBooked = bookings.some(b => b.activity === sim && b.timeslot === timeslot);
+                        const tagClass = isBooked ? "is-warning" : "is-success";
+                        const tagText = isBooked ? "Gebucht" : "Verfügbar";
+                        row += `<td><span class="tag ${tagClass} is-medium">${tagText}</span></td>`;
+                    });
+                    row += `</tr>`;
+                    table.innerHTML += row;
+                });
+
+                tableContainer.appendChild(table);
+                tableWrapper.appendChild(tableContainer);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            populateTables();
+            setInterval(populateTables, 5000);
+        });
+    </script>
 </head>
 <body>
 <section class="section">
-        <h1 class="title">AirKatherl - Nächste Zeiten</h1>
+    <h1 class="title">AirKatherl - Nächste Zeiten</h1>
     <div class="columns">
-        <div class="column container">
-            <h1 class="title is-4">Sim_01</h1>
-            <h1 class="subtitle is-4">Florida_Keys, Grand_Canyon</h1>
-        </div>
-        <div class="column container">
-            <h1 class="title is-4">Sim_02</h1>
-            <h1 class="subtitle is-4">Florida_Keys, Grand_Canyon</h1>
-        </div>
+        <div class="column container" id="simContainers"></div>
     </div>
 </section>
-<section class="section">
-<div class="columns">
-    <div class="column">Table goes here
 
-        <table class="table is-striped">
-            <tr>
-                <th>Zeit</th>
-                <th>Sim_01</th>
-                <th>Sim_02</th>
-            </tr>
-            <tr>
-                <td>19:00 - 19:20</td>
-                <td><span class="tag is-success is-medium">Verfügbar</span></td>
-                <td><span class="tag is-warning is-medium">Gebucht</span></td>
-            </tr>
-            <tr>
-        </table>
+<section class="section">
+    <div class="table-wrapper" id="tableWrapper">
+        <!-- Tables populated dynamically -->
     </div>
-</div>
 </section>
+<script>
+    function checkApiAndRedirect() {
+        const url = "https://tiquet-staging-api.mosstuff.de/api/v1/state/booking/1";
+        async function fetchData() {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                const rawData = await response.text();
+                console.log("Raw API Response:", rawData);
+                let data;
+                try {
+                    data = JSON.parse(rawData);
+                } catch (e) {
+                    data = rawData.trim();
+                }
+                console.log("Parsed API Response:", data);
+                if (data === "promo") {
+                    window.location.href = "./promo.html"; // Adjust as needed
+                }
+            } catch (error) {
+                console.error("Error fetching API data:", error);
+            }
+        }
+        setInterval(fetchData, 3000);
+    }
+    checkApiAndRedirect();
+</script>
 </body>
 </html>

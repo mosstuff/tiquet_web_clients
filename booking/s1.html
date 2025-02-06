@@ -7,38 +7,47 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <style>
-        /* Ensure the dropdown button has a minimum width */
-        #dropdownButton {
-            min-width: 160px; /* Adjust this value to match the initial button width */
+        #dropdownButton, #dropdownButton2 {
+            min-width: 160px;
         }
     </style>
 </head>
 <body>
 <section class="section">
     <div class="container">
-        <progress id="progress" class="progress is-link" value="25" max="100">
-            25%
-        </progress>
+        <progress id="progress" class="progress is-link" value="25" max="100">25%</progress>
         <h1 class="title">Tiquet - Booking</h1>
     </div>
 </section>
 <section class="section">
     <div class="container">
         <div class="is-flex is-justify-content-center block">
-            <div class="dropdown">
+            <div class="dropdown" id="dropdown1">
                 <div class="dropdown-trigger">
-                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" id="dropdownButton">
+                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu1" id="dropdownButton">
                         <span>Select activity</span>
                         <span class="icon is-small">
                             <i class="fas fa-angle-down" aria-hidden="true"></i>
                         </span>
                     </button>
                 </div>
-                <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
-                        <a href="#" class="dropdown-item" data-value="Sim1">Sim1</a>
-                        <a href="#" class="dropdown-item" data-value="Sim2">Sim2</a>
-                    </div>
+                <div class="dropdown-menu" id="dropdown-menu1" role="menu">
+                    <div class="dropdown-content" id="dropdown-content1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="is-flex is-justify-content-center block">
+            <div class="dropdown" id="dropdown2">
+                <div class="dropdown-trigger">
+                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu2" id="dropdownButton2">
+                        <span>Select option</span>
+                        <span class="icon is-small">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu2" role="menu">
+                    <div class="dropdown-content" id="dropdown-content2"></div>
                 </div>
             </div>
         </div>
@@ -49,7 +58,6 @@
 </section>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <script>
-
     function animateProgress($progressBar, val, currentVal) {
         currentVal = currentVal || 0;
         var step = val * 16 / 500;
@@ -63,50 +71,83 @@
         animate(currentVal);
     }
 
-    // Variable to store the selected activity
     let selectedActivity = '';
+    let selectedOption = '';
+    let activities = {};
 
-    // Dropdown functionality to toggle visibility
-    var dropdown = document.querySelector('.dropdown');
-    dropdown.addEventListener('click', function(event) {
-        event.stopPropagation();
-        dropdown.classList.toggle('is-active');
-    });
+    function populateDropdown(dropdownContentId, items, variableName, buttonId, dropdownId) {
+        const dropdownContent = document.getElementById(dropdownContentId);
+        dropdownContent.innerHTML = '';
+        items.forEach(item => {
+            const a = document.createElement('a');
+            a.href = '#';
+            a.classList.add('dropdown-item');
+            a.textContent = item;
+            a.dataset.value = item;
+            a.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent navigation
 
-    // Handle dropdown item selection
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
-    dropdownItems.forEach(item => {
-        item.addEventListener('click', function() {
-            selectedActivity = item.getAttribute('data-value'); // Get the value of the selected item
-            const button = document.getElementById('dropdownButton');
-            button.innerHTML = `
-                <span>${selectedActivity}</span>
-                <span class="icon is-small">
-                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                </span>
-            `; // Change the button text
-            dropdown.classList.remove('is-active'); // Close the dropdown after selection
+                if (variableName === 'selectedActivity') {
+                    selectedActivity = item; // Update selected activity
+                    selectedOption = ''; // Reset option when activity changes
+                    document.getElementById('dropdownButton2').innerHTML = `<span>Select option</span><span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>`;
+                    populateDropdown('dropdown-content2', activities[item] || [], 'selectedOption', 'dropdownButton2', 'dropdown2');
+                } else if (variableName === 'selectedOption') {
+                    selectedOption = item; // Update selected option
+                }
+
+                document.getElementById(buttonId).innerHTML = `<span>${item}</span><span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>`;
+                document.getElementById(dropdownId).classList.remove('is-active'); // Close dropdown
+            });
+            dropdownContent.appendChild(a);
         });
-    });
-
-    // Handle button click and include selected value in the URL
-    function handleButtonClick() {
-        if (!selectedActivity) {
-            alert("Please select an activity first!");
-            return; // Do not continue if no selection is made
-        }
-        const button = document.getElementById('continueButton');
-        animateProgress($('#progress'), 50, 25);
-        button.classList.add('is-loading');
-        window.location.href = 's2.html?activity=' + encodeURIComponent(selectedActivity); // Include selected activity as URL parameter
     }
 
-    // Close the dropdown if clicked outside
-    document.addEventListener('click', function(event) {
-        if (!dropdown.contains(event.target)) {
-            dropdown.classList.remove('is-active');
+    function fetchConfig() {
+        fetch('https://tiquet-staging-api.mosstuff.de/api/v1/config')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched data:", data); // Debugging
+                activities = data.activities;
+                populateDropdown('dropdown-content1', Object.keys(activities), 'selectedActivity', 'dropdownButton', 'dropdown1');
+            })
+            .catch(error => console.error('Error fetching config:', error));
+    }
+
+    fetchConfig();
+
+    function handleButtonClick() {
+
+        if (!selectedActivity.trim() || !selectedOption.trim()) {
+            alert("Please select both an activity and an option!");
+            return;
         }
+
+        animateProgress($('#progress'), 50, 25);
+        document.getElementById('continueButton').classList.add('is-loading');
+        window.location.href = 's2.html?activity=' + encodeURIComponent(selectedActivity) + '&subactivity=' + encodeURIComponent(selectedOption);
+    }
+
+    // Dropdown toggle functionality
+    document.getElementById('dropdownButton').addEventListener('click', function(event) {
+        event.stopPropagation();
+        document.getElementById('dropdown1').classList.toggle('is-active');
+    });
+
+    document.getElementById('dropdownButton2').addEventListener('click', function(event) {
+        event.stopPropagation();
+        document.getElementById('dropdown2').classList.toggle('is-active');
+    });
+
+    document.addEventListener('click', function(event) {
+        ['dropdown1', 'dropdown2'].forEach(id => {
+            const dropdown = document.getElementById(id);
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('is-active');
+            }
+        });
     });
 </script>
+
 </body>
 </html>

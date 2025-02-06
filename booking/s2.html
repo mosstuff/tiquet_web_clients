@@ -73,7 +73,7 @@
             dropdown.classList.remove('is-active'); // Close the dropdown after selection
         });
     });
-    
+
     function handleButtonClick() {
         if (!selectedTime) {
             alert("Please select a time first!");
@@ -95,6 +95,62 @@
             dropdown.classList.remove('is-active');
         }
     });
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        const configUrl = "https://tiquet-staging-api.mosstuff.de/api/v1/config";
+        const bookingUrl = "https://tiquet-staging-api.mosstuff.de/api/v1/booking/get_booking";
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedActivity = urlParams.get("activity");
+
+        try {
+            // Fetch config data
+            const configResponse = await fetch(configUrl);
+            const configData = await configResponse.json();
+            const currentTime = configData.system_time;
+            let availableTimeslots = configData.all_timeslots;
+
+            // Filter out timeslots that have already passed
+            availableTimeslots = availableTimeslots.filter(slot => slot > currentTime);
+
+            // Fetch booking data
+            const bookingResponse = await fetch(bookingUrl);
+            const bookings = await bookingResponse.json();
+
+            // Remove timeslots that are already booked for the selected activity
+            const bookedTimeslots = new Set(
+                bookings
+                    .filter(booking => booking.activity === selectedActivity)
+                    .map(booking => booking.timeslot)
+            );
+
+            availableTimeslots = availableTimeslots.filter(slot => !bookedTimeslots.has(slot));
+
+            // Populate dropdown with filtered timeslots
+            const dropdownMenu = document.querySelector(".dropdown-content");
+            dropdownMenu.innerHTML = ""; // Clear existing items
+
+            availableTimeslots.forEach(slot => {
+                const a = document.createElement("a");
+                a.href = "#";
+                a.className = "dropdown-item";
+                a.dataset.value = slot;
+                a.textContent = slot;
+                a.addEventListener("click", function () {
+                    selectedTime = slot;
+                    document.getElementById("dropdownButton").innerHTML = `
+                    <span>${slot}</span>
+                    <span class="icon is-small">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>`;
+                    document.querySelector(".dropdown").classList.remove("is-active");
+                });
+                dropdownMenu.appendChild(a);
+            });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    });
+
 </script>
 </body>
 </html>

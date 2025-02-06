@@ -35,20 +35,41 @@
 <script>
     function handleButtonClick() {
         const codeField = document.getElementById('code');
-        const enteredcode = codeField.value
-        if (!enteredcode) {
+        const enteredCode = codeField.value.trim();
+
+        if (!enteredCode) {
             alert("Please enter a Code first!");
             return;
         }
-        const button = document.getElementById('continueButton');
-        button.classList.add('is-loading');
-        const currentUrl = window.location.href.split('#')[0];
-        const queryString = currentUrl.split('?')[1] || '';
-        const urlParams = new URLSearchParams(queryString);
-        urlParams.set('code', enteredcode);
-        const newUrl = `s5.html?${urlParams.toString()}`;
-        window.location.href = newUrl;
+
+        try {
+            const url = new URL(enteredCode);
+            const id = url.searchParams.get('id');
+
+            if (!id) {
+                alert("Invalid URL format. Please enter a valid ticket link.");
+                return;
+            }
+
+            const button = document.getElementById('continueButton');
+            button.classList.add('is-loading');
+
+            // Preserve existing URL parameters
+            const currentUrl = window.location.href.split('#')[0];
+            const queryString = currentUrl.split('?')[1] || '';
+            const urlParams = new URLSearchParams(queryString);
+
+            // Update only the "code" parameter with the extracted ID
+            urlParams.set('code', id);
+
+            const newUrl = `s5.html?${urlParams.toString()}`;
+            window.location.href = newUrl;
+        } catch (error) {
+            alert("Invalid input. Please enter a valid URL.");
+        }
     }
+
+
 </script>
 </body>
 </html>

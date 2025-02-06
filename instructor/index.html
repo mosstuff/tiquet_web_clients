@@ -40,7 +40,7 @@
                 <br><br>
                 <span class="icon-text">
                     <span class="icon" id="current-status-icon">
-                        <i class="fas fa-clock" id="current-status-icon-icon"></i>
+                        <i class="fas fa-clock has-text-warning" id="current-status-icon-icon"></i>
                     </span>
                     <span id="current-status">N/A</span>
                 </span>
@@ -65,7 +65,7 @@
                 <br><br>
                 <span class="icon-text">
                     <span class="icon" id="next-status-icon">
-                        <i class="fas fa-clock" id="next-status-icon-icon"></i>
+                        <i class="fas fa-clock has-text-warning" id="next-status-icon-icon"></i>
                     </span>
                     <span id="next-status">N/A</span>
                 </span>
@@ -85,12 +85,12 @@
     activityNameElement.textContent = `${activityId}`;
 
     async function getConfig() {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/config');
+        const response = await fetch('https://tiquet-staging-api.mosstuff.de/api/v1/config');
         return response.json();
     }
 
     async function getBookings() {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/booking/get_booking');
+        const response = await fetch('https://tiquet-staging-api.mosstuff.de/api/v1/booking/get_booking');
         return response.json();
     }
 
@@ -112,6 +112,7 @@
                 };
             }
         }
+
         return { current: "N/A", next: "N/A" };  // If no timeslot matches, return "N/A"
     }
 
@@ -121,15 +122,20 @@
         const statusElement = document.getElementById(`${elementPrefix}-status`);
         const iconElement = document.getElementById(`${elementPrefix}-status-icon`);
         const iconIconElement = document.getElementById(`${elementPrefix}-status-icon-icon`);
-
-        if (slotData.arrived) {
-            statusElement.textContent = "Arrived";
-            iconIconElement.classList.replace("fa-clock", "fa-check");
-            iconElement.classList.add("has-text-success");
-        } else {
-            statusElement.textContent = "Booked";
+        if(slotData.arrived !== undefined) {
+            if (slotData.arrived) {
+                statusElement.textContent = "Arrived";
+                iconIconElement.classList.replace("fa-clock", "fa-check");
+                iconIconElement.classList.replace("has-text-warning", "has-text-success");
+            } else {
+                statusElement.textContent = "Booked";
+                iconIconElement.classList.replace("fa-check", "fa-clock");
+                iconIconElement.classList.replace("has-text-success", "has-text-warning");
+            }
+        }else {
+            statusElement.textContent = "N/A";
             iconIconElement.classList.replace("fa-check", "fa-clock");
-            iconElement.classList.add("has-text-warning");
+            iconIconElement.classList.replace("has-text-success", "has-text-warning");
         }
     }
 
