@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <style>
+        table {
+            width: 100%;
+            table-layout: auto;
+        }
+        th, td {
+            white-space: nowrap;
+        }
+    </style>
+    <script>
+        async function fetchConfig() {
+            try {
+                const response = await fetch("https://api.tiquet.mosstuff.de/api/v1/config");
+                if (!response.ok) throw new Error("Failed to fetch config");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching config:", error);
+                return null;
+            }
+        }
+
+        async function fetchBookings() {
+            try {
+                const response = await fetch("https://api.tiquet.mosstuff.de/api/v1/booking/get_booking");
+                if (!response.ok) throw new Error("Failed to fetch bookings");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching bookings:", error);
+                return [];
+            }
+        }
+
+        async function handleAction(qrCode, action) {
+            const endpoint = `https://api.tiquet.mosstuff.de/api/v1/booking/${action}/${qrCode}`;
+            try {
+                const response = await fetch(endpoint, { method: "GET" });
+                if (!response.ok) throw new Error("Action failed");
+                populateTable();
+            } catch (error) {
+                console.error(`Error performing ${action}:`, error);
+            }
+            try {
+                const response = await fetch(endpoint, { method: "POST" });
+                if (!response.ok) throw new Error("Action failed");
+                populateTable();
+            } catch (error) {
+                console.error(`Error performing ${action}:`, error);
+            }
+        }
+
+        async function populateTable() {
+            const config = await fetchConfig();
+            const bookings = await fetchBookings();
+            if (!config) return;
+
+            const tableWrapper = document.getElementById("tableWrapper");
+            tableWrapper.innerHTML = "";
+
+            const table = document.createElement("table");
+            table.className = "table is-striped";
+
+            let headerRow = `<tr><th>Time</th>`;
+            Object.keys(config.activities).forEach(sim => {
+                headerRow += `<th>${sim}</th>`;
+            });
+            headerRow += `</tr>`;
+            table.innerHTML += headerRow;
+
+            config.all_timeslots.forEach(timeslot => {
+                let row = `<tr><td>${timeslot}</td>`;
+                Object.keys(config.activities).forEach(sim => {
+                    const booking = bookings.find(b => b.activity === sim && b.timeslot === timeslot);
+                    if (booking) {
+                        row += `<td>
+                            <span class="tag is-warning is-medium">Booked by: ${booking.name}</span>
+                            <span class="tag is-primary is-medium">Activity: ${booking.subactivity}</span>
+                            <button class="button is-small is-primary" onclick="handleAction('${booking.qr_code}', 'checkin')">Check-In</button>
+                            <button class="button is-small is-link" onclick="window.open('https://tiquet.mosstuff.de/info?id=${booking.qr_code}', '_blank').focus()">Info</button>
+                            <button class="button is-small is-danger" onclick="handleAction('${booking.qr_code}', 'delete_booking')">Delete</button>
+                        </td>`;
+                    } else {
+                        row += `<td><span class="tag is-success is-medium">Available</span></td>`;
+                    }
+                });
+                row += `</tr>`;
+                table.innerHTML += row;
+            });
+
+            tableWrapper.appendChild(table);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            populateTable();
+            setInterval(populateTable, 5000);
+        });
+    </script>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Tiquet - Administration</h1>
+</section>
+
+<section class="section">
+    <div id="tableWrapper">
+        <!-- Table populated dynamically -->
+    </div>
+</section>
+</body>
+</html>
