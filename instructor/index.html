@@ -30,12 +30,19 @@
                     </span>
                     <span id="current-name">N/A</span>
                 </span>
+                <br><br>
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-fighter-jet"></i>
+                    </span>
+                    <span id="current-airplane">N/A</span>
+                </span>
                 <br>
                 <span class="icon-text">
                     <span class="icon">
-                        <i class="fas fa-plane-departure"></i>
+                        <i class="fas fa-map-marker-alt"></i>
                     </span>
-                    <span id="current-subactivity">N/A</span>
+                    <span id="current-airport">N/A</span>
                 </span>
                 <br><br>
                 <span class="icon-text">
@@ -55,12 +62,19 @@
                     </span>
                     <span id="next-name">N/A</span>
                 </span>
+                <br><br>
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-fighter-jet"></i>
+                    </span>
+                    <span id="next-airplane">N/A</span>
+                </span>
                 <br>
                 <span class="icon-text">
                     <span class="icon">
-                        <i class="fas fa-plane-departure"></i>
+                        <i class="fas fa-map-marker-alt"></i>
                     </span>
-                    <span id="next-subactivity">N/A</span>
+                    <span id="next-airport">N/A</span>
                 </span>
                 <br><br>
                 <span class="icon-text">
@@ -113,6 +127,11 @@
         return response.json();
     }
 
+    async function getRouteInfo() {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/routemanagement/getstr?activity=' + activityId);
+        return response.json();
+    }
+
     function parseTimeString(timeString) {
         const [hours, minutes] = timeString.split(':').map(Number);
         return hours * 60 + minutes;  // Convert hours and minutes into total minutes since midnight
@@ -135,9 +154,10 @@
         return { current: "N/A", next: "N/A" };  // If no timeslot matches, return "N/A"
     }
 
-    function populateCustomerData(slotData, elementPrefix) {
+    function populateCustomerData(slotData, elementPrefix, routeInfo) {
         document.getElementById(`${elementPrefix}-name`).textContent = slotData.name || "N/A";
-        document.getElementById(`${elementPrefix}-subactivity`).textContent = slotData.subactivity || "N/A";
+        document.getElementById(`${elementPrefix}-airplane`).textContent = routeInfo.plane || "N/A";
+        document.getElementById(`${elementPrefix}-airport`).textContent = routeInfo.airport || "N/A";
         const statusElement = document.getElementById(`${elementPrefix}-status`);
         const iconElement = document.getElementById(`${elementPrefix}-status-icon`);
         const iconIconElement = document.getElementById(`${elementPrefix}-status-icon-icon`);
@@ -168,8 +188,10 @@
         const currentBooking = bookings.find(b => b.timeslot === current && b.activity === activityId) || {};
         const nextBooking = bookings.find(b => b.timeslot === next && b.activity === activityId) || {};
 
-        populateCustomerData(currentBooking, "current");
-        populateCustomerData(nextBooking, "next");
+        const routeInfo = await getRouteInfo();
+
+        populateCustomerData(currentBooking, "current", routeInfo.current);
+        populateCustomerData(nextBooking, "next", routeInfo.next);
     }
 
     async function updateTimer() {
