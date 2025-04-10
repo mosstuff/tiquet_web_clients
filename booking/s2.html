@@ -97,17 +97,20 @@
     });
 
     document.addEventListener("DOMContentLoaded", async function () {
-        const configUrl = "https://api.tiquet.mosstuff.de/api/v1/config";
-        const bookingUrl = "https://api.tiquet.mosstuff.de/api/v1/booking/get_booking";
+        const configUrl = "http://127.0.0.1/api/v1/config";
+        const bookingUrl = "http://127.0.0.1/api/v1/booking/get_booking";
+        const tfUrl = "http://127.0.0.1/api/v1/config/get_timeframe_by_activity";
         const urlParams = new URLSearchParams(window.location.search);
         const selectedActivity = urlParams.get("activity");
 
         try {
             // Fetch config data
             const configResponse = await fetch(configUrl);
+            const tfResponse = await fetch(tfUrl);
+            const tfData = await tfResponse.json();
             const configData = await configResponse.json();
             const currentTime = configData.system_time;
-            let availableTimeslots = configData.all_timeslots;
+            let availableTimeslots = tfData;
 
             // Filter out timeslots that have already passed
             availableTimeslots = availableTimeslots.filter(slot => slot > currentTime);
