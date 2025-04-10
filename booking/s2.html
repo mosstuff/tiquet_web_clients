@@ -97,16 +97,16 @@
     });
 
     document.addEventListener("DOMContentLoaded", async function () {
-        const configUrl = "http://127.0.0.1/api/v1/config";
-        const bookingUrl = "http://127.0.0.1/api/v1/booking/get_booking";
-        const tfUrl = "http://127.0.0.1/api/v1/config/get_timeframe_by_activity";
+        const configUrl = "http://127.0.0.1:8000/api/v1/config";
+        const bookingUrl = "http://127.0.0.1:8000/api/v1/booking/get_booking";
+        const tfUrl = "http://127.0.0.1:8000/api/v1/config/get_timeframe_by_activity?activity=";
         const urlParams = new URLSearchParams(window.location.search);
         const selectedActivity = urlParams.get("activity");
 
         try {
             // Fetch config data
             const configResponse = await fetch(configUrl);
-            const tfResponse = await fetch(tfUrl);
+            const tfResponse = await fetch(tfUrl + selectedActivity);
             const tfData = await tfResponse.json();
             const configData = await configResponse.json();
             const currentTime = configData.system_time;
