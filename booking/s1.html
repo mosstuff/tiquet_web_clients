@@ -82,9 +82,9 @@
 
     // Load initial data
     async function loadData() {
-        planes = await fetchData('http://127.0.0.1:8000/api/v1/config/planes');
-        airports = await fetchData('http://127.0.0.1:8000/api/v1/config/airports');
-        const config = await fetchData('http://127.0.0.1:8000/api/v1/config');
+        planes = await fetchData('https://api.tiquet.mosstuff.de/api/v1/config/planes');
+        airports = await fetchData('https://api.tiquet.mosstuff.de/api/v1/config/airports');
+        const config = await fetchData('https://api.tiquet.mosstuff.de/api/v1/config');
         activities = config.activities || {};
 
         populateDropdown('dropdown-content1', planes, 'selectedPlaneId', 'dropdownButton1', 'dropdown1');
