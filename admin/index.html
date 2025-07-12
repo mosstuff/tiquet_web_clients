@@ -51,8 +51,7 @@
         async function handleAction(qrCode, action) {
             const endpoint = `https://api.tiquet.mosstuff.de/api/v1/booking/${action}/${qrCode}`;
             try {
-                const method = action === "delete_booking" ? "POST" : "GET";
-                const response = await fetch(endpoint, { method });
+                const response = await fetch(endpoint, { action });
                 if (!response.ok) throw new Error("Action failed");
                 populateTables();
             } catch (error) {
