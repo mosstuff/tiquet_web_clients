@@ -75,6 +75,7 @@
 
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script>
+    let apiKey= prompt("Please enter your API-Key");
     new Audio('./correct.mp3').play();
     new Audio('./error.mp3').play();
     async function onScanSuccess(decodedText, decodedResult) {
@@ -95,6 +96,7 @@
         // Make the API call
         fetch(`https://api.tiquet.mosstuff.de/api/v1/booking/checkin/${id}`, {
             method: 'POST',
+            headers: {'access_token': apiKey}
         })
             .then(response => response.json())
             .then(data => {

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <style>
+        table {
+            width: 100%;
+            table-layout: auto;
+        }
+        th, td {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Tiquet - Settings</h1>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="is-flex is-justify-content-center block">
+            <input class="input" type="text" placeholder="API-Key" id="apikey" />
+        </div>
+        <div class="is-flex is-justify-content-center block">
+            <input class="input" type="text" placeholder="SimId" id="simid" />
+        </div>
+        <div class="is-flex is-justify-content-center block">
+            <button class="button is-large is-primary is-responsive" id="continueButton" onclick="handleButtonClick()">Apply</button>
+        </div>
+    </div>
+</section>
+<script>
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function handleButtonClick() {
+        let keyField = document.getElementById('apikey');
+        let idField = document.getElementById('simid');
+        let key = keyField.value;
+        let id = idField.value;
+        const button = document.getElementById('continueButton');
+        button.classList.add('is-loading');
+        setCookie("tiquet_api_key",key,1);
+        setCookie("tiquet_sim_id",id,1);
+        button.classList.remove('is-loading');
+    }
+</script>
+</body>
+</html>
