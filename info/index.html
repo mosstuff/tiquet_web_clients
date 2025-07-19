@@ -1,122 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Info</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <style>
-        /* Reduce the padding of the container */
-        .container {
-            padding-left: 0;
-            padding-right: 0;
-        }
-        /* Remove padding from table cells for both horizontal and vertical space */
-        .table td, .table th {
-            padding: 10px 5px; /* Reduce horizontal padding */
-        }
-        /* Optionally, you can add a little more space between rows */
-        .table tbody tr {
-            height: 50px; /* Increase the row height */
-        }
-        /* Allow the table to take up more horizontal space */
-        .table-container {
-            width: 100%;
-        }
-        /* Optional: Increase font size for better visibility */
-        .table td, .table th {
-            font-size: 1.1rem;
-        }
-        /* Make sure the table width stretches more */
-        .table.is-fullwidth {
-            width: 100%;
-        }
-        /* Optional: Increase line height to make the content more spread out vertically */
-        .table td, .table th {
-            line-height: 1.75;
-        }
-    </style>
-</head>
-<body>
-<section class="section">
-    <div class="container">
-        <h1 class="title">Tiquet - Info</h1>
-    </div>
-</section>
-<section class="section">
-    <div class="container">
-        <div class="is-flex is-justify-content-center block">
-            <table class="table">
-                <tr>
-                    <th>Type</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Simulator</td>
-                    <td id="activityField">ERROR</td>
-                </tr>
-                <tr>
-                    <td>Route</td>
-                    <td id="subactivityField">ERROR</td>
-                </tr>
-                <tr>
-                    <td>Zeit</td>
-                    <td id="timeField">ERROR</td>
-                </tr>
-                <tr>
-                    <td>Name</td>
-                    <td id="nameField">ERROR</td>
-                </tr>
-            </table>
-        </div>
-        <article class="message is-danger">
-            <div class="message-header">
-                <p>Bitte beachte</p>
-            </div>
-            <div class="message-body">
-                Sei bitte spätestens <strong>fünf Minuten</strong> vor dem beginn deines Zeitfensters da! Danke!
-            </div>
-        </article>
-    </div>
-</section>
-<script>
-    async function fetchBookingData(id) {
-        try {
-            const response = await fetch(`https://api.tiquet.mosstuff.de/api/v1/booking/get_booking/${id}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Info</title>
+        <link rel="stylesheet" href="/css/bulma.min.css">
+        <style>
+            .container {
+                padding-left: 0;
+                padding-right: 0;
             }
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Error fetching booking data:', error);
-            return null;
-        }
-    }
-
-    function getIdFromUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('id');
-    }
-
-    async function populateTableFields() {
-        const id = getIdFromUrl();
-        if (!id) {
-            console.error('No id parameter provided in the URL');
-            return;
-        }
-
-        const bookingData = await fetchBookingData(id);
-        if (!bookingData) return;
-
-        document.getElementById('activityField').innerText = bookingData.activity || 'ERROR';
-        document.getElementById('subactivityField').innerText = bookingData.subactivity || 'ERROR';
-        document.getElementById('timeField').innerText = bookingData.timeslot || 'ERROR';
-        document.getElementById('nameField').innerText = bookingData.name || 'ERROR';
-    }
-
-    window.onload = populateTableFields;
-</script>
-</body>
+            .table td, .table th {
+                padding: 10px 5px;
+            }
+            .table tbody tr {
+                height: 50px;
+            }
+            .table-container {
+                width: 100%;
+            }
+            .table td, .table th {
+                font-size: 1.1rem;
+            }
+            .table.is-fullwidth {
+                width: 100%;
+            }
+            .table td, .table th {
+                line-height: 1.75;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Tiquet - Info</h1>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="is-flex is-justify-content-center block">
+                    <table class="table">
+                        <tr>
+                            <th>Type</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Simulator</td>
+                            <td id="activityField">ERROR</td>
+                        </tr>
+                        <tr>
+                            <td>Route</td>
+                            <td id="subactivityField">ERROR</td>
+                        </tr>
+                        <tr>
+                            <td>Zeit</td>
+                            <td id="timeField">ERROR</td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td id="nameField">ERROR</td>
+                        </tr>
+                    </table>
+                </div>
+                <article class="message is-danger">
+                    <div class="message-header">
+                        <p>Bitte beachte</p>
+                    </div>
+                    <div class="message-body">
+                        Sei bitte spätestens <strong>fünf Minuten</strong> vor dem beginn deines Zeitfensters da! Danke!
+                    </div>
+                </article>
+            </div>
+        </section>
+        <script src="info.js"></script>
+    </body>
 </html>

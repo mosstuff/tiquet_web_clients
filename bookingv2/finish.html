@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking</title>
+    <link rel="stylesheet" href="../css/bulma.min.css">
+    <link rel="stylesheet" href="../css/fontawesome/css/all.min.css">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <progress class="progress is-success" value="100" max="100">
+            100%
+        </progress>
+        <h1 class="title">Tiquet - Booking</h1>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <div class="is-flex is-justify-content-center block">
+            <table class="table">
+                <tr>
+                    <th>Type</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Activity</td>
+                    <td id="activityField">ERROR</td>
+                </tr>
+                <tr>
+                    <td>Sub-Activity</td>
+                    <td id="subactivityField">ERROR</td>
+                </tr>
+                <tr>
+                    <td>Time</td>
+                    <td id="timeField">ERROR</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td id="nameField">ERROR</td>
+                </tr>
+                <tr>
+                    <td>Code</td>
+                    <td id="codeField">ERROR</td>
+                </tr>
+            </table>
+        </div>
+        <div class="is-flex is-justify-content-center block">
+            <button class="button is-large is-primary is-responsive" id="submitButton" onclick="handleButtonClick()">Submit</button>
+        </div>
+    </div>
+</section>
+<script src="../js/boilerplate.js"></script>
+<script src="finish.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Booking</title>
+        <link rel="stylesheet" href="../css/bulma.min.css">
+        <link rel="stylesheet" href="../css/fontawesome/css/all.min.css">
+        <style>
+            #dropdownButton1, #dropdownButton2, #dropdownButton3 {
+                min-width: 200px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .dropdown {
+                margin: 5px;
+            }
+
+            /* Ensure the dropdown button has a minimum width */
+            #dropdownButton {
+                min-width: 160px; /* Adjust this value to match the initial button width */
+            }
+        </style>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <progress id="progress" class="progress is-link" value="50" max="100">50%</progress>
+                <h1 class="title">Tiquet - Booking</h1>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <div class="is-flex block">
+                    <div class="dropdown" id="dropdown1">
+                        <div class="dropdown-trigger">
+                            <button class="button" id="dropdownButton1">
+                                <span>Select Plane</span>
+                                <span class="icon">
+                                    <i class="fas fa-angle-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu1">
+                            <div class="dropdown-content" id="dropdown-content1"></div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="dropdown2">
+                        <div class="dropdown-trigger">
+                            <button class="button" id="dropdownButton2">
+                                <span>Select Airport</span>
+                                <span class="icon">
+                                    <i class="fas fa-angle-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu2">
+                            <div class="dropdown-content" id="dropdown-content2"></div>
+                        </div>
+                    </div>
+                    <div class="dropdown" id="dropdown3">
+                        <div class="dropdown-trigger">
+                            <button class="button" id="dropdownButton3">
+                                <span>Select Simulator</span>
+                                <span class="icon">
+                                    <i class="fas fa-angle-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu3">
+                            <div class="dropdown-content" id="dropdown-content3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="is-flex block">
+                    <div class="dropdown" id="dropdown4">
+                        <div class="dropdown-trigger">
+                            <button class="button" id="dropdownButton4">
+                                <span>Select Time</span>
+                                <span class="icon">
+                                    <i class="fas fa-angle-down"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu4">
+                            <div class="dropdown-content" id="dropdown-content4"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="is-flex is-justify-content-center block">
+                    <input class="input" type="text" placeholder="Name" id="name" />
+                </div>
+                <div class="is-flex is-justify-content-center block">
+                    <input class="input" type="text" placeholder="Ticket-Code" id="code" />
+                </div>
+                
+                <div class="is-flex is-justify-content-center block">
+                    <button class="button is-large is-primary is-responsive" id="continueButton" onclick="handleButtonClick()">Continue</button>
+                </div>
+            </div>
+        </section>
+        <script src="../js/jquery.min.js"></script>
+        <script src="../js/boilerplate.js"></script>
+        <script src="bookingv2.js">
+        </script>
+    </body>
+</html>

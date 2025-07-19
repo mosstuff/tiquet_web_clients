@@ -1,157 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Checkin</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <style>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>Checkin</title>
+        <link rel="manifest" href="manifest.json" />
+        <link rel="stylesheet" href="/css/bulma.min.css">
+        <link rel="stylesheet" href="/css/fontawesome55.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU">
+        <style>
+            .throbber {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+            }
 
+            .modal-content {
+                text-align: center;
+                padding: 1rem;
+            }
 
-        .throbber {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-        }
+            .modal-card {
+                width: 90%;
+                max-width: 400px;
+            }
 
-        .modal-content {
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .modal-card {
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .modal-card-head {
-            background-color: #48c68e;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-
-<section class="section">
-    <div class="container">
-        <h1 class="title">Tiquet - Checkin</h1>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container" id="reader">
-    </div>
-</section>
-
-<!-- Throbber (loading spinner) -->
-<div id="throbber" class="throbber">
-    <i class="fas fa-spinner fa-spin"></i> Loading...
-</div>
-
-<!-- Modal -->
-<div class="modal" id="modal">
-    <div class="modal-background"></div>
-    <div class="modal-card">
-        <header class="modal-card-head" id="modal-header-block">
-            <p class="modal-card-title" id="modal-header">Modal title</p>
-        </header>
-        <section class="modal-card-body">
-            <div id="modal-icon" class="modal-content"></div>
-            <h2 id="modal-message" class="modal-content"></h2>
-            <h2 id="modal-message-2" class="modal-content"></h2>
-        </section>
-        <footer class="modal-card-foot">
-            <div class="buttons">
-                <button class="button is-success" id="close-modal">Close</button>
+            .modal-card-head {
+                background-color: #48c68e;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Tiquet - Checkin</h1>
             </div>
-        </footer>
-    </div>
-</div>
-
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-<script>
-    let apiKey= prompt("Please enter your API-Key");
-    new Audio('./correct.mp3').play();
-    new Audio('./error.mp3').play();
-    async function onScanSuccess(decodedText, decodedResult) {
-        // Extract the id parameter from the URL
-        const urlParams = new URLSearchParams(decodedText.split('?')[1]);
-        const id = urlParams.get('id');
-        html5QrcodeScanner.pause();
-        if (!id) {
-            await new Audio('./error.mp3').play();
-            alert("Invalid QR code!");
-            html5QrcodeScanner.resume();
-            return;
-        }
-
-        // Show the throbber (loading spinner)
-        document.getElementById('throbber').style.display = 'block';
-
-        // Make the API call
-        fetch(`https://api.tiquet.mosstuff.de/api/v1/booking/checkin/${id}`, {
-            method: 'POST',
-            headers: {'access_token': apiKey}
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Hide throbber
-                document.getElementById('throbber').style.display = 'none';
-
-                // Check response status
-                if (data.status === 'success') {
-                    // Play a verifying sound
-                    new Audio('./correct.mp3').play();
-
-                    // Show success modal
-                    document.getElementById('modal-icon').innerHTML = '<i class="fas fa-check-circle" style="color: green; font-size: 4rem;"></i>';
-                    document.getElementById('modal-message').innerText = `Welcome, ${data.name}!`;
-                    document.getElementById('modal-message-2').innerText = `Activity ID: ${data.activity}`;
-                    document.getElementById('modal-header').innerText = `Welcome`;
-                    document.getElementById('modal-header-block').style.background = '#48c68e';
-                    document.getElementById('modal').style.display = 'block';
-                } else {
-                    // Play an error sound
-                    new Audio('./error.mp3').play();
-
-                    // Show error modal
-                    document.getElementById('modal-icon').innerHTML = '<i class="fas fa-times-circle" style="color: red; font-size: 4rem;"></i>';
-                    document.getElementById('modal-message').innerText = `Error: ${data.status}`;
-                    document.getElementById('modal-message-2').innerText = ``;
-                    document.getElementById('modal-header').innerText = `Error!`;
-                    document.getElementById('modal-header-block').style.background = '#ff6585';
-                    document.getElementById('modal').style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('throbber').style.display = 'none';
-                alert('An error occurred while processing your request.');
-                html5QrcodeScanner.resume();
-            });
-    }
-
-    function onScanFailure(error) {
-        console.warn(`Code scan error = ${error}`);
-    }
-
-    let html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: {width: 250, height: 250} },
-        /* verbose= */ false
-    );
-    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
-    // Close the modal
-    document.getElementById('close-modal').addEventListener('click', function() {
-        document.getElementById('modal').style.display = 'none';
-        html5QrcodeScanner.resume();
-    });
-</script>
-</body>
+        </section>
+        <section class="section">
+            <div class="container" id="reader"></div>
+        </section>
+        <!-- Throbber (loading spinner) -->
+        <div id="throbber" class="throbber">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Loading...</span>
+        </div>
+        <!-- Modal -->
+        <div class="modal" id="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head" id="modal-header-block">
+                    <p class="modal-card-title" id="modal-header">Modal title</p>
+                </header>
+                <section class="modal-card-body">
+                    <div id="modal-icon" class="modal-content"></div>
+                    <h2 id="modal-message" class="modal-content"></h2>
+                    <h2 id="modal-message-2" class="modal-content"></h2>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="buttons">
+                        <button class="button is-success" id="close-modal">Close</button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="/js/html5-qrcode.min.js"></script>
+        <script src="./checkin.js"></script>
+    </body>
 </html>
