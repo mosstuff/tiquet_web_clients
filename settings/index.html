@@ -39,6 +39,7 @@
         d.setTime(d.getTime() + (exdays*24*60*60*1000));
         let expires = "expires="+ d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        alert("Cookie " + cname + " set to value: " + cvalue + " sucessfully! Expires in " + exdays + " days.")
     }
     function handleButtonClick() {
         let keyField = document.getElementById('apikey');
