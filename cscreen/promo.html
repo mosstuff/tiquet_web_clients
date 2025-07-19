@@ -24,12 +24,14 @@
         <video autoplay muted loop id="promoVideo">
             <source src="promo.mp4" type="video/mp4">
         </video>
+        <script src="../js/boilerplate.js"></script>
         <script>
+            boilerplateSetup(false);
             function checkApiAndRedirect() {
                 const url = "https://api.tiquet.mosstuff.de/api/v1/state/booking/1";
                 async function fetchData() {
                     try {
-                        const response = await fetch(url);
+                        const response = await fetch(url, {headers: {'access_token': apiKey}});
                         if (!response.ok) {
                             throw new Error("Network response was not ok");
                         }
