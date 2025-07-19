@@ -17,7 +17,7 @@ async function fetchConfig() {
 }
 
 async function getTimeframe() {
-    const response = await fetch('https://api.tiquet.mosstuff.de/api/v1/config/get_timeframe_by_activity?activity=' + activityId, {headers: {'access_token': apiKey}});
+    const response = await fetch('https://api.tiquet.mosstuff.de/api/v1/config/get_timeframe_by_activity?activity=' + simId, {headers: {'access_token': apiKey}});
     return response.json();
 }
 
@@ -27,7 +27,7 @@ async function getBookings() {
 }
 
 async function getRouteInfo() {
-    const response = await fetch('https://api.tiquet.mosstuff.de/api/v1/routemanagement/getstr?activity=' + activityId, {headers: {'access_token': apiKey}});
+    const response = await fetch('https://api.tiquet.mosstuff.de/api/v1/routemanagement/getstr?activity=' + simId, {headers: {'access_token': apiKey}});
     return response.json();
 }
 
@@ -84,8 +84,8 @@ async function initializePage() {
     const { current, next } = findCurrentAndNextTimeslot(timeframe, system_time);
 
     const bookings = await getBookings();
-    const currentBooking = bookings.find(b => b.timeslot === current && b.activity === activityId) || {};
-    const nextBooking = bookings.find(b => b.timeslot === next && b.activity === activityId) || {};
+    const currentBooking = bookings.find(b => b.timeslot === current && b.activity === simId) || {};
+    const nextBooking = bookings.find(b => b.timeslot === next && b.activity === simId) || {};
 
     const routeInfo = await getRouteInfo();
 
@@ -99,7 +99,7 @@ async function updateTimer() {
 
     try {
         const config = await fetchConfig();
-        const offset = config?.activities[activityId]?.offset || 0;
+        const offset = config?.activities[simId]?.offset || 0;
 
         const currentMinutes = currentTime.getMinutes();
         const currentSeconds = currentTime.getSeconds();
@@ -128,8 +128,8 @@ async function updateTimer() {
 document.addEventListener('DOMContentLoaded', () => {
     let configCache = null;
     const activityNameElement = document.getElementById(`sim-id`);
-    activityNameElement.textContent = `${activityId}`;
     boilerplateSetup(true);
+    activityNameElement.textContent = `${simId}`;
     initializePage();
     updateTimer();
     setInterval(updateTimer, 1000);
