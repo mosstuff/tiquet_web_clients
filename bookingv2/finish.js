@@ -25,6 +25,7 @@ async function handleButtonClick() {
         method: "POST",
         body: JSON.stringify(getUrlParams()),
         headers: {
+            "Content-type": "application/json; charset=UTF-8",
             'access_token': apiKey
         }
     });
