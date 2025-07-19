@@ -1,3 +1,4 @@
+let configCache = null;
 async function getConfig() {
     const response = await fetch('https://api.tiquet.mosstuff.de/api/v1/config', {headers: {'access_token': apiKey}});
     return response.json();
