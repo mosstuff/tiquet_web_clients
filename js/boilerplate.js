@@ -15,13 +15,13 @@ function getCookie(cname) {
 }
     
 function boilerplateSetup(simidreq) {
-    var apiKey = getCookie("tiquet_api_key");
+    apiKey = getCookie("tiquet_api_key");
     if (apiKey == ""){
         alert("ERROR! ApiKey not found. Please set it using the settings.");
         location.href = "https://tiquet.mosstuff.de/settings";
     }
     if (simidreq){
-        var simId = getCookie("tiquet_sim_id");
+        simId = getCookie("tiquet_sim_id");
         if (simId == ""){
             alert("ERROR! SimId required. Please set it using the settings.");
             location.href = "https://tiquet.mosstuff.de/settings";
