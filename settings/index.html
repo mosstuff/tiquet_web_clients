@@ -51,6 +51,10 @@
         setCookie("tiquet_api_key",key,1);
         setCookie("tiquet_sim_id",id,1);
         button.classList.remove('is-loading');
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.return) {
+            window.location.href = urlParams.return;
+        }
     }
 </script>
 </body>
